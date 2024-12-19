@@ -78,6 +78,12 @@ RUN apk update \
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
+# remove inner-tunnel
+RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel
+
+# copy config
+COPY raddb/ /opt/etc/raddb/
+
 EXPOSE 1812/udp 1813/udp
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["radiusd"]
