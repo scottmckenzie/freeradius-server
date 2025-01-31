@@ -1,3 +1,5 @@
+ARG RELEASE
+
 ARG from=alpine:3.21
 FROM ${from} AS build
 
@@ -10,17 +12,16 @@ RUN apk add git gcc make
 #
 #  Create build directory
 #
-RUN mkdir -p /usr/local/src/repositories/freeradius-server
-WORKDIR /usr/local/src/repositories/freeradius-server/
+RUN mkdir -p /usr/local/src/repositories
+WORKDIR /usr/local/src/repositories
 
 #
 #  Shallow clone the FreeRADIUS repository
 #
 ARG source=https://github.com/FreeRADIUS/freeradius-server.git
-ARG release=release_3_2_7
 
-RUN git clone --depth 1 --single-branch --branch ${release} ${source}
-WORKDIR freeradius-server
+RUN git clone --depth 1 --single-branch --branch ${RELEASE} ${source}
+WORKDIR /usr/local/src/repositories/freeradius-server
 
 #
 #  Install build dependencies
