@@ -1,5 +1,3 @@
-ARG RELEASE
-
 ARG from=alpine:3.21
 FROM ${from} AS build
 
@@ -19,7 +17,6 @@ WORKDIR /usr/local/src/repositories
 #  Shallow clone the FreeRADIUS repository
 #
 ARG source=https://github.com/FreeRADIUS/freeradius-server.git
-
 RUN git clone --depth 1 --single-branch --branch ${RELEASE} ${source}
 WORKDIR /usr/local/src/repositories/freeradius-server
 
