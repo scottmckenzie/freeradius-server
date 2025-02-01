@@ -54,7 +54,3 @@ jobs:
             ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
             ghcr.io/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Output config.log on failure
-        if: ${{ failure() }}
-        run: cat config.log

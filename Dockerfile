@@ -1,4 +1,4 @@
-ARG from=alpine:3.21
+ARG from=alpine:3.20
 FROM ${from} AS build
 
 ARG RELEASE=release_3_0_26
