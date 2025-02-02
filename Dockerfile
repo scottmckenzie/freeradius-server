@@ -43,10 +43,10 @@ RUN apk add postgresql-dev mariadb-dev unixodbc-dev sqlite-dev
 #
 #  Build the server
 #
-RUN ./configure --disable-developer --prefix=/opt
-RUN make -j2
-RUN make install
-RUN rm /opt/lib/*.a
+RUN ./configure --disable-developer --prefix=/opt \
+ && make \
+ && make install \
+ && rm /opt/lib/*.a
 
 #
 #  Clean environment and run the server
