@@ -7,7 +7,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  RELEASE: release_3_2_7
   VERSION: 3.2.7
 
 jobs:
@@ -40,13 +39,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-flags: --debug
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: RELEASE=${{ env.RELEASE }}
+          build-args: FREERADIUS_RELEASE=release_${{ env.VERSION }}
           platforms: linux/arm64
           push: false
