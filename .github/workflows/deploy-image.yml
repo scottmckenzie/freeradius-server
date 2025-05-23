@@ -7,7 +7,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  RELEASE: release_3_2_7
   VERSION: 3.2.7
 
 jobs:
@@ -47,8 +46,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: RELEASE=${{ env.RELEASE }}
-          platforms: linux/amd64,linux/arm64
+          build-args: RELEASE=release_${{ env.VERSION }}
+          platforms: linux/arm64
           push: true
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
