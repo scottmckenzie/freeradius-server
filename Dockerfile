@@ -18,10 +18,14 @@ WORKDIR /usr/local/src/repositories
 #
 ARG source=https://github.com/FreeRADIUS/freeradius-server.git
 RUN echo source=${source}
-ARG release=release_3_2_6
-RUN echo release=${release}
 
-RUN git clone --depth 1 --single-branch --branch ${release} ${source}
+ARG REPOSITORY=https://github.com/FreeRADIUS/freeradius-server.git
+RUN echo REPOSITORY=${REPOSITORY}
+
+ARG RELEASE=release_3_2_6
+RUN echo RELEASE=${release}
+
+RUN git clone --depth 1 --branch ${RELEASE} ${REPOSITORY}
 WORKDIR freeradius-server
 
 #

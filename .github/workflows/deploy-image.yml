@@ -46,8 +46,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: release=release_${{ env.VERSION }}
-          platforms: linux/arm64,linux/amd64
+          build-args: RELEASE=release_${{ env.VERSION }}
+          platforms: linux/arm64
           push: true
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
