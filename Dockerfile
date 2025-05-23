@@ -17,7 +17,7 @@ WORKDIR /usr/local/src/repositories
 #  Shallow clone the FreeRADIUS repository
 #
 ARG source=https://github.com/FreeRADIUS/freeradius-server.git
-ARG release=release_3_2_7
+ARG release=release
 
 RUN git clone --depth 1 --single-branch --branch ${release} ${source}
 WORKDIR freeradius-server
@@ -80,9 +80,6 @@ RUN chmod +x /docker-entrypoint.sh
 
 # remove inner-tunnel
 RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel
-
-# copy config
-COPY raddb/ /opt/etc/raddb/
 
 EXPOSE 1812/udp 1813/udp
 ENTRYPOINT ["/docker-entrypoint.sh"]
