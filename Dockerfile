@@ -1,5 +1,5 @@
-ARG from=alpine:3.21
-FROM ${from} AS build
+ARG FROM=alpine:3.21
+FROM ${FROM} AS build
 
 #
 #  Install build tools
@@ -16,17 +16,12 @@ WORKDIR /usr/local/src/repositories
 #
 #  Shallow clone the FreeRADIUS repository
 #
-ARG source=https://github.com/FreeRADIUS/freeradius-server.git
-RUN echo source=${source}
+ARG REPOSITORY="https://github.com/FreeRADIUS/freeradius-server.git"
+ARG RELEASE="release_3_2_6"
 
-ARG REPOSITORY=https://github.com/FreeRADIUS/freeradius-server.git
-RUN echo REPOSITORY=${REPOSITORY}
-
-ARG RELEASE=release_3_2_6
-RUN echo RELEASE=${release}
-
-RUN git clone --depth 1 --branch ${RELEASE} ${REPOSITORY}
+RUN git clone ${REPOSITORY}
 WORKDIR freeradius-server
+RUN git checkout ${RELEASE}
 
 #
 #  Install build dependencies
@@ -56,7 +51,7 @@ RUN ./configure --prefix=/opt \
 #
 #  Clean environment and run the server
 #
-FROM ${from}
+FROM ${FROM}
 COPY --from=build /opt /opt
 
 #
