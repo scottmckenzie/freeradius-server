@@ -16,12 +16,10 @@ WORKDIR /usr/local/src/repositories
 #
 #  Shallow clone the FreeRADIUS repository
 #
-ARG REPOSITORY="https://github.com/FreeRADIUS/freeradius-server.git"
-ARG RELEASE="release_3_2_6"
-
-RUN git clone ${REPOSITORY}
+ARG FREERADIUS_RELEASE
+ARG FREERADIUS_REPOSITORY
+RUN git clone --depth 1 --branch ${FREERADIUS_RELEASE} ${FREERADIUS_REPOSITORY}
 WORKDIR freeradius-server
-RUN git checkout ${RELEASE}
 
 #
 #  Install build dependencies

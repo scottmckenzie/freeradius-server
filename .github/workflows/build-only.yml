@@ -2,12 +2,15 @@ name: ci
 
 on:
   push:
-    branches: ['main']
+    branches-ignore: ['main']
 
 env:
-  REGISTRY: ghcr.io
+  FREERADIUS_REPOSITORY: https://github.com/FreeRADIUS/freeradius-server.git
   IMAGE_NAME: ${{ github.repository }}
-  VERSION: 3.2.7
+  REGISTRY: ghcr.io
+  VERSION_MAJOR: 3
+  VERSION_MINOR: 2
+  VERSION_PATCH: 7
 
 jobs:
   build-and-push-image:
@@ -39,17 +42,13 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-flags: --debug
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: RELEASE=release_${{ env.VERSION }}
+          build-args: |
+            FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
+            FREERADIUS_RELEASE=${{ format('release_{0}_{1}_{2}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH) }}
           platforms: linux/arm64
-          push: true
-          tags: |
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-            ghcr.io/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
