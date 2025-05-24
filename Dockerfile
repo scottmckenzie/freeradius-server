@@ -80,6 +80,9 @@ RUN chmod +x /docker-entrypoint.sh
 # remove inner-tunnel
 RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel
 
+# This config enables the "rewrite_called_station_id" policy which creates the Called-Station-MAC attribute
+COPY raddb/ /opt/etc/raddb/
+
 EXPOSE 1812/udp 1813/udp
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["radiusd"]
