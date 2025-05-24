@@ -49,6 +49,6 @@ jobs:
           context: .
           build-args: |
             FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
-            FREERADIUS_RELEASE=format('release_{0}_{1}_{2}', ${{ env.VERSION_MAJOR }}, ${{ env.VERSION_MINOR }}, ${{ env.VERSION_PATCH }})
+            FREERADIUS_RELEASE=${{ format('release_{0}_{1}_{2}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH) }}
           platforms: linux/arm64
           push: false
