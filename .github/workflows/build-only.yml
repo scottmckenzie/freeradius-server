@@ -45,7 +45,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          build-args: |
+            FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
+            FREERADIUS_RELEASE=release_${{ env.VERSION }}
           platforms: linux/arm64
           push: false
-        env:
-          FREERADIUS_RELEASE: release_${{ env.VERSION }}
