@@ -7,7 +7,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  VERSION: 3.2.7
+  VERSION_MAJOR: 3
+  VERSION_MINOR: 2
+  VERSION_PATCH: 7
 
 jobs:
   build-and-push-image:
@@ -44,10 +46,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: FREERADIUS=release_${{ env.VERSION }}
+          build-args: |
+            FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
+            FREERADIUS_RELEASE=${{ format('release_{0}_{1}_{2}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH) }}
           platforms: linux/arm64
           push: true
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
             ghcr.io/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
+        env:
+          VERSION: ${{ format('{0}.{1}.{2}', env.VERSION_MAJOR, env.VERSION_MINOR, env.VERSION_PATCH) }}
