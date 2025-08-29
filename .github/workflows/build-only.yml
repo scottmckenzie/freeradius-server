@@ -51,7 +51,7 @@ jobs:
           build-args: |
             FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
             FREERADIUS_RELEASE=${{ env.FREERADIUS_RELEASE }}
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: false
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
