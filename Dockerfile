@@ -1,5 +1,5 @@
-ARG FROM=alpine:3.21
-FROM ${FROM} AS build
+ARG from=alpine:3.21
+FROM ${from} AS build
 
 #
 #  Install build tools
@@ -10,16 +10,15 @@ RUN apk add git gcc make
 #
 #  Create build directory
 #
-RUN mkdir -p /usr/local/src/repositories
-WORKDIR /usr/local/src/repositories
+RUN mkdir -p /usr/local/src/repositories/freeradius-server
+WORKDIR /usr/local/src/repositories/freeradius-server/
 
 #
 #  Shallow clone the FreeRADIUS repository
 #
 ARG FREERADIUS_RELEASE
 ARG FREERADIUS_REPOSITORY
-RUN git clone --depth 1 --branch ${FREERADIUS_RELEASE} ${FREERADIUS_REPOSITORY}
-WORKDIR freeradius-server
+RUN git clone --depth 1 --branch ${FREERADIUS_RELEASE} ${FREERADIUS_REPOSITORY} .
 
 #
 #  Install build dependencies
@@ -41,15 +40,15 @@ RUN apk add postgresql-dev mariadb-dev unixodbc-dev sqlite-dev
 #
 #  Build the server
 #
-RUN ./configure --prefix=/opt \
- && make -j2 \
- && make install \
- && rm /opt/lib/*.a
+RUN ./configure --prefix=/opt
+RUN make -j2
+RUN make install
+RUN rm /opt/lib/*.a
 
 #
 #  Clean environment and run the server
 #
-FROM ${FROM}
+FROM ${from}
 COPY --from=build /opt /opt
 
 #
@@ -74,8 +73,9 @@ RUN apk update \
     \
     && ln -s /opt/etc/raddb /etc/raddb
 
-COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
+WORKDIR /
+COPY scripts/docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 # remove inner-tunnel
 RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel
