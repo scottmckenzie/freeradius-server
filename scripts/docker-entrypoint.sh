@@ -3,6 +3,7 @@ set -e
 
 # prevent "Configuration directory /opt/etc/raddb is globally writable.  Refusing to start due to insecure configuration."
 chmod 755 /opt/etc/raddb
+chmod 640 /opt/etc/raddb/radiusd.conf
 
 PATH=/opt/sbin:/opt/bin:$PATH
 export PATH
