@@ -5,6 +5,7 @@ set -e
 chmod 755 /opt/etc/raddb
 chmod 640 /opt/etc/raddb/clients.conf
 chmod 640 /opt/etc/raddb/radiusd.conf
+chmod 640 /opt/etc/raddb/mods-config/files/authorize
 
 PATH=/opt/sbin:/opt/bin:$PATH
 export PATH
