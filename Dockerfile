@@ -41,7 +41,7 @@ RUN apk add postgresql-dev mariadb-dev unixodbc-dev sqlite-dev
 #  Build the server
 #
 RUN ./configure --prefix=/opt
-RUN make -j2
+RUN make -j"$(nproc)"
 RUN make install
 RUN rm /opt/lib/*.a
 
@@ -52,10 +52,11 @@ FROM ${from}
 COPY --from=build /opt /opt
 
 #
-# These are needed for the server to start
+# These are needed for the server to start.
+#  The server links against OpenSSL (built with openssl-dev above);
+#  libssl/libcrypto come in as dependencies of the packages below.
 #
-RUN apk update \
-    && apk add talloc libressl pcre libwbclient tzdata \
+RUN apk add --no-cache talloc pcre libwbclient tzdata \
     \
 #
 #  Libraries that are needed dependent on which modules are used
@@ -64,24 +65,43 @@ RUN apk update \
 #  other dependencies then install any others required in your
 #  local Dockerfile.
 #
-    && apk add libcurl json-c libldap hiredis sqlite-dev \
+    && apk add --no-cache libcurl json-c libldap hiredis sqlite-libs \
 #RUN apk add libidn krb5
 #RUN apk add unbound-libs
 #RUN apk add ruby-libs perl python3-dev
 #RUN apk add libmemcached gdbm
 #RUN apk add postgresql-dev mariadb-dev unixodbc-dev
     \
-    && ln -s /opt/etc/raddb /etc/raddb
+    && ln -s /opt/etc/raddb /etc/raddb \
+    && addgroup -S radius \
+    && adduser -S -D -H -G radius -h /opt/var/log/radius -s /sbin/nologin radius
 
 WORKDIR /
 COPY scripts/docker-entrypoint.sh docker-entrypoint.sh
 RUN chmod +x docker-entrypoint.sh
 
-# remove inner-tunnel
-RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel
-
-# This config enables the "rewrite_called_station_id" policy which creates the Called-Station-MAC attribute
-COPY raddb/ /opt/etc/raddb/
+#
+#  Customise the stock config in place rather than shipping a copy of
+#  it, so it tracks each FreeRADIUS release:
+#    - remove inner-tunnel
+#    - enable the "rewrite_called_station_id" policy, which creates the
+#      Called-Station-MAC and Called-Station-SSID attributes
+#    - drop privileges to radius:radius after startup
+#  Each grep fails the build if upstream changes the line being edited.
+#
+RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel \
+    && sed -i 's/^#\(\trewrite_called_station_id\)$/\1/' \
+        /opt/etc/raddb/sites-available/default \
+    && grep -q '^	rewrite_called_station_id$' \
+        /opt/etc/raddb/sites-available/default \
+    && sed -i -e 's/^#\(\tuser = radius\)$/\1/' \
+        -e 's/^#\(\tgroup = radius\)$/\1/' /opt/etc/raddb/radiusd.conf \
+    && grep -q '^	user = radius$' /opt/etc/raddb/radiusd.conf \
+    && grep -q '^	group = radius$' /opt/etc/raddb/radiusd.conf \
+    && chgrp -R radius /opt/etc/raddb \
+    && chmod -R g+rX,o-rwx /opt/etc/raddb \
+    && install -d -o radius -g radius /opt/var/run/radiusd \
+    && chown -R radius:radius /opt/var/log/radius
 
 EXPOSE 1812/udp 1813/udp
 ENTRYPOINT ["/docker-entrypoint.sh"]
