@@ -30,5 +30,6 @@ file.
 
 ## Upgrading FreeRADIUS
 
-Change `VERSION` in both workflows under `.github/workflows/`. It maps
-to the upstream tag, e.g. `3.2.10` becomes `release_3_2_10`.
+Change `VERSION` in `.github/workflows/ci.yml`. It maps
+to the upstream tag, e.g. `3.2.10` becomes `release_3_2_10`. Every
+branch builds the image; only pushes to `main` publish it.

@@ -1,17 +1,19 @@
 name: ci
 
+# Every branch builds the image; only main publishes it.
 on:
   push:
-    branches: ['main']
 
 env:
   FREERADIUS_REPOSITORY: https://github.com/FreeRADIUS/freeradius-server.git
   IMAGE_NAME: ${{ github.repository }}
   REGISTRY: ghcr.io
+  # FreeRADIUS release to build; maps to upstream tag release_X_Y_Z.
   VERSION: 3.2.10
+  PUBLISH: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
-  build-and-push-image:
+  build:
     runs-on: ubuntu-latest
 
     permissions:
@@ -23,7 +25,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set FREERADIUS_RELEASE environment variable
-        run: echo "FREERADIUS_RELEASE=release_${VERSION//./_}" >> $GITHUB_ENV
+        run: echo "FREERADIUS_RELEASE=release_${VERSION//./_}" >> "$GITHUB_ENV"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -32,6 +34,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Log in to the Container registry
+        if: env.PUBLISH == 'true'
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -44,7 +47,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Build and push Docker image
+      - name: Build Docker image (and push on main)
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
@@ -52,8 +55,8 @@ jobs:
             FREERADIUS_REPOSITORY=${{ env.FREERADIUS_REPOSITORY }}
             FREERADIUS_RELEASE=${{ env.FREERADIUS_RELEASE }}
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ env.PUBLISH == 'true' }}
           tags: |
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-            ghcr.io/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
