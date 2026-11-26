@@ -11,9 +11,6 @@ readonly RADDB='/opt/etc/raddb'
 # Files holding secrets; radiusd (running as radius) must read them.
 readonly PROTECTED_FILES='clients.conf radiusd.conf mods-config/files/authorize'
 
-PATH="/opt/sbin:/opt/bin:${PATH}"
-export PATH
-
 #######################################
 # Print a warning to STDERR.
 # Arguments:

@@ -50,6 +50,8 @@ RUN rm /opt/lib/*.a
 #
 FROM ${from}
 COPY --from=build /opt /opt
+#  So radiusd, radtest, radclient, radmin etc. work in "exec" sessions too.
+ENV PATH=/opt/sbin:/opt/bin:$PATH
 
 #
 # These are needed for the server to start.
