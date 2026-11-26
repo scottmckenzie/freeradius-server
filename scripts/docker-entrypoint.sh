@@ -71,7 +71,9 @@ main() {
     radiusd | freeradius)
       shift
       fix_permissions
-      exec radiusd -f "$@"
+      # Log to stdout so "podman logs" shows it; overrides the config
+      # file's log destination, including a mounted radiusd.conf.
+      exec radiusd -f -l stdout "$@"
       ;;
   esac
 

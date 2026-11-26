@@ -89,6 +89,7 @@ RUN chmod +x docker-entrypoint.sh
 #    - enable the "rewrite_called_station_id" policy, which creates the
 #      Called-Station-MAC and Called-Station-SSID attributes
 #    - drop privileges to radius:radius after startup
+#    - log authentication results (accept/reject lines)
 #  Each grep fails the build if upstream changes the line being edited.
 #
 RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel \
@@ -100,6 +101,8 @@ RUN rm /opt/etc/raddb/sites-enabled/inner-tunnel \
         -e 's/^#\(\tgroup = radius\)$/\1/' /opt/etc/raddb/radiusd.conf \
     && grep -q '^	user = radius$' /opt/etc/raddb/radiusd.conf \
     && grep -q '^	group = radius$' /opt/etc/raddb/radiusd.conf \
+    && sed -i 's/^\tauth = no$/\tauth = yes/' /opt/etc/raddb/radiusd.conf \
+    && grep -q '^	auth = yes$' /opt/etc/raddb/radiusd.conf \
     && chgrp -R radius /opt/etc/raddb \
     && chmod -R g+rX,o-rwx /opt/etc/raddb \
     && install -d -o radius -g radius /opt/var/run/radiusd \

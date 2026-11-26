@@ -12,6 +12,11 @@ Reference: https://github.com/FreeRADIUS/freeradius-server/tree/v3.2.x/scripts/d
 - The `rewrite_called_station_id` policy is enabled in the `default`
   site, creating `Called-Station-MAC` and `Called-Station-SSID`.
 - `radiusd` drops privileges to `radius:radius` after startup.
+- The server log goes to stdout (`podman logs` / `docker logs`) instead
+  of `radius.log`, via `-l stdout` in the entrypoint. This overrides a
+  mounted `radiusd.conf`. Accounting `detail` and `linelog` output still
+  go to files.
+- `auth = yes`: each login accept/reject is logged.
 
 ## Mounting configuration
 
