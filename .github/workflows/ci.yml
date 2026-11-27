@@ -9,7 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   REGISTRY: ghcr.io
   # FreeRADIUS release to build; maps to upstream tag release_X_Y_Z.
-  VERSION: 3.2.10
+  VERSION: 3.2.11
   PUBLISH: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
